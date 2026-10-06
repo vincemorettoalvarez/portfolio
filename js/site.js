@@ -23,8 +23,8 @@
   var details = document.getElementById("learning-details");
   if (details && !location.hash) details.open = false;
 
-  /* Scroll reveal: text first, media slightly after via CSS delay */
-  var revealTargets = document.querySelectorAll(".timeline-stop[data-reveal], .reveal-block");
+  /* Scroll reveal for About now / strengths */
+  var revealTargets = document.querySelectorAll(".reveal-block");
   if (revealTargets.length) {
     if ("IntersectionObserver" in window) {
       var observer = new IntersectionObserver(
@@ -48,74 +48,270 @@
     }
   }
 
-  /* Methodology walkthrough: path progress, step spotlight, rail sync */
-  var methodSteps = document.querySelectorAll(".method-step[data-step]");
-  var progressFill = document.getElementById("method-progress-fill");
-  var railLinks = document.querySelectorAll("[data-step-link]");
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* About career flight: click through eras with fly animation */
+  var flightPanels = document.querySelectorAll(".flight-panel");
+  var flightTicks = document.querySelectorAll("[data-flight-index]");
+  var flightYear = document.getElementById("flight-year");
+  var flightCount = document.getElementById("flight-count");
+  var flightRail = document.getElementById("flight-rail-fill");
+  var flightPrev = document.getElementById("flight-prev");
+  var flightNext = document.getElementById("flight-next");
+  var flightIndex = 0;
+  var flightBusy = false;
+  var flightReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function setActiveStep(stepNum) {
-    methodSteps.forEach(function (step) {
-      var active = String(step.getAttribute("data-step")) === String(stepNum);
-      step.classList.toggle("is-active", active);
-      step.classList.toggle("is-seen", Number(step.getAttribute("data-step")) <= Number(stepNum));
-    });
-    railLinks.forEach(function (link) {
-      var active = String(link.getAttribute("data-step-link")) === String(stepNum);
-      link.classList.toggle("is-active", active);
+  function setFlight(index, direction) {
+    if (!flightPanels.length) return;
+    index = Math.max(0, Math.min(flightPanels.length - 1, index));
+    if (index === flightIndex && flightPanels[index].classList.contains("is-active")) {
+      return;
+    }
+    if (flightBusy && !flightReduce) return;
+    var prev = flightIndex;
+    var dir = direction || (index >= prev ? 1 : -1);
+    flightIndex = index;
+    flightBusy = true;
+
+    flightPanels.forEach(function (panel, i) {
+      var active = i === index;
+      panel.classList.toggle("is-active", active);
+      panel.classList.toggle("dir-back", active && dir < 0);
       if (active) {
-        link.setAttribute("aria-current", "step");
+        panel.removeAttribute("hidden");
       } else {
-        link.removeAttribute("aria-current");
+        panel.setAttribute("hidden", "");
       }
     });
+
+    flightTicks.forEach(function (tick, i) {
+      var active = i === index;
+      tick.classList.toggle("is-active", active);
+      tick.setAttribute("aria-selected", active ? "true" : "false");
+      tick.tabIndex = active ? 0 : -1;
+    });
+
+    if (flightCount) {
+      flightCount.textContent = index + 1 + " / " + flightPanels.length;
+    }
+    if (flightRail) {
+      flightRail.style.width = ((index + 1) / flightPanels.length) * 100 + "%";
+    }
+    if (flightPrev) flightPrev.disabled = index === 0;
+    if (flightNext) flightNext.disabled = index === flightPanels.length - 1;
+
+    var yearText = flightPanels[index].getAttribute("data-year") || "";
+    if (flightYear) {
+      if (flightReduce) {
+        flightYear.textContent = yearText;
+        flightYear.classList.remove("is-fly-out", "is-fly-in");
+      } else {
+        flightYear.classList.remove("is-fly-in");
+        flightYear.classList.add("is-fly-out");
+        window.setTimeout(function () {
+          flightYear.textContent = yearText;
+          flightYear.classList.remove("is-fly-out");
+          flightYear.classList.add("is-fly-in");
+        }, 180);
+      }
+    }
+
+    window.setTimeout(function () {
+      flightBusy = false;
+    }, flightReduce ? 0 : 480);
   }
 
-  if (methodSteps.length) {
-    if ("IntersectionObserver" in window) {
-      var stepObserver = new IntersectionObserver(
-        function (entries) {
-          var visible = entries
-            .filter(function (e) { return e.isIntersecting; })
-            .sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
-          if (visible.length) {
-            setActiveStep(visible[0].target.getAttribute("data-step"));
-          }
-        },
-        { threshold: [0.35, 0.55, 0.75], rootMargin: "-18% 0px -35% 0px" }
-      );
-      methodSteps.forEach(function (step) {
-        stepObserver.observe(step);
-        if (!reduceMotion) {
-          step.classList.add("method-step--animate");
-        } else {
-          step.classList.add("is-seen", "is-active");
+  if (flightPanels.length) {
+    flightTicks.forEach(function (tick) {
+      tick.addEventListener("click", function () {
+        setFlight(Number(tick.getAttribute("data-flight-index")));
+      });
+      tick.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+          e.preventDefault();
+          setFlight(flightIndex + 1, 1);
+          if (flightTicks[flightIndex]) flightTicks[flightIndex].focus();
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault();
+          setFlight(flightIndex - 1, -1);
+          if (flightTicks[flightIndex]) flightTicks[flightIndex].focus();
         }
       });
-    } else {
-      setActiveStep(1);
-      methodSteps.forEach(function (step) {
-        step.classList.add("is-seen");
+    });
+    if (flightPrev) {
+      flightPrev.addEventListener("click", function () {
+        setFlight(flightIndex - 1, -1);
+      });
+    }
+    if (flightNext) {
+      flightNext.addEventListener("click", function () {
+        setFlight(flightIndex + 1, 1);
+      });
+    }
+    flightIndex = -1;
+    setFlight(0, 1);
+  }
+
+  /* Methodology explorer: hover preview + click to pin, no scroll-spy */
+  var methodBoard = document.querySelector("[data-method-board]");
+  if (methodBoard) {
+    var methodReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var methodChips = methodBoard.querySelectorAll("[data-method-step]");
+    var methodStage = methodBoard.querySelector(".method-stage");
+    var methodIndexEl = methodBoard.querySelector("[data-method-index]");
+    var methodTitleEl = methodBoard.querySelector("[data-method-title]");
+    var methodJobEl = methodBoard.querySelector("[data-method-job]");
+    var methodCopyEl = methodBoard.querySelector("[data-method-copy]");
+    var methodCountEl = methodBoard.querySelector("[data-method-count]");
+    var methodProgressEl = methodBoard.querySelector("[data-method-progress]");
+    var methodPrev = methodBoard.querySelector("[data-method-prev]");
+    var methodNext = methodBoard.querySelector("[data-method-next]");
+    var methodLink = document.createElement("a");
+    methodLink.className = "method-stage-link";
+    methodLink.href = "work.html#learning";
+    methodLink.textContent = "See practice on Work";
+    methodLink.hidden = true;
+    if (methodCopyEl && methodCopyEl.parentNode) {
+      methodCopyEl.parentNode.appendChild(methodLink);
+    }
+
+    var methodSteps = [
+      {
+        num: "01",
+        title: "Intake",
+        job: "Clarify the need before building.",
+        copy: "Projects start by clarifying the audience, business need, and constraints. Who needs to do what differently, and what gets in the way?"
+      },
+      {
+        num: "02",
+        title: "Stakeholders & SMEs",
+        job: "Partner for accuracy and buy-in.",
+        copy: "Close partnership with subject matter experts and stakeholders. The goal is usable truth, not a slide dump of everything someone knows."
+      },
+      {
+        num: "03",
+        title: "Recommend",
+        job: "Choose the format that fits the job.",
+        copy: "Advise on approach (course, video, or resource) based on the learning need, time available, and how people will apply it on the job."
+      },
+      {
+        num: "04",
+        title: "ADDIE in the work",
+        job: "Treat the model as a loop, not a checkbox.",
+        copy: "Analysis, design, development, implementation, and evaluation show up as a cycle. Scope and fidelity flex with the problem."
+      },
+      {
+        num: "05",
+        title: "Knowledge checks throughout",
+        job: "Practice inside the experience, not only at the end.",
+        copy: "Flip cards, sorting, scenarios, and other chances to try before a final quiz.",
+        link: true
+      },
+      {
+        num: "06",
+        title: "Assessment",
+        job: "Measure what learners can do afterward.",
+        copy: "Feedback that reinforces the rule, not just a score. Closing with clarity matters more than finishing with a percentage."
+      },
+      {
+        num: "07",
+        title: "Analytics & follow-through",
+        job: "Review after launch, then iterate.",
+        copy: "Look at data and feedback to see if training is effective. Closing the window isn’t the finish line; follow-through is."
+      }
+    ];
+
+    var methodPinned = 0;
+    var methodShown = 0;
+    var methodTimer = null;
+
+    function paintMethod(index, animate) {
+      var step = methodSteps[index];
+      if (!step) return;
+      methodShown = index;
+
+      function apply() {
+        if (methodIndexEl) methodIndexEl.textContent = step.num;
+        if (methodTitleEl) methodTitleEl.textContent = step.title;
+        if (methodJobEl) methodJobEl.textContent = step.job;
+        if (methodCopyEl) methodCopyEl.textContent = step.copy;
+        methodLink.hidden = !step.link;
+        if (methodCountEl) methodCountEl.textContent = index + 1 + " / " + methodSteps.length;
+        if (methodProgressEl) {
+          methodProgressEl.style.width = ((index + 1) / methodSteps.length) * 100 + "%";
+        }
+        if (methodStage) {
+          methodStage.setAttribute("aria-labelledby", "chip-" + (index + 1));
+          methodStage.classList.remove("is-switching");
+        }
+        if (methodPrev) methodPrev.disabled = index === 0;
+        if (methodNext) methodNext.disabled = index === methodSteps.length - 1;
+      }
+
+      if (animate && !methodReduce && methodStage) {
+        methodStage.classList.add("is-switching");
+        window.clearTimeout(methodTimer);
+        methodTimer = window.setTimeout(apply, 160);
+      } else {
+        apply();
+      }
+
+      methodChips.forEach(function (chip, i) {
+        var active = i === methodPinned;
+        var hot = i === index;
+        chip.classList.toggle("is-active", active);
+        chip.classList.toggle("is-hot", hot && !active);
+        chip.setAttribute("aria-selected", active ? "true" : "false");
+        chip.tabIndex = active ? 0 : -1;
       });
     }
 
-    if (!reduceMotion && progressFill) {
-      var walk = document.getElementById("method-walk");
-      function updatePathProgress() {
-        if (!walk) return;
-        var rect = walk.getBoundingClientRect();
-        var viewH = window.innerHeight || 1;
-        var start = viewH * 0.55;
-        var end = rect.height + viewH * 0.2;
-        var traveled = start - rect.top;
-        var pct = Math.max(0, Math.min(1, traveled / end)) * 100;
-        progressFill.style.width = pct + "%";
-      }
-      window.addEventListener("scroll", updatePathProgress, { passive: true });
-      window.addEventListener("resize", updatePathProgress);
-      updatePathProgress();
-    } else if (progressFill) {
-      progressFill.style.width = "100%";
+    function pinMethod(index) {
+      methodPinned = Math.max(0, Math.min(methodSteps.length - 1, index));
+      paintMethod(methodPinned, true);
     }
+
+    function previewMethod(index) {
+      paintMethod(index, true);
+    }
+
+    methodChips.forEach(function (chip, i) {
+      chip.addEventListener("mouseenter", function () {
+        previewMethod(i);
+      });
+      chip.addEventListener("focus", function () {
+        previewMethod(i);
+      });
+      chip.addEventListener("click", function () {
+        pinMethod(i);
+      });
+      chip.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+          e.preventDefault();
+          pinMethod(methodPinned + 1);
+          if (methodChips[methodPinned]) methodChips[methodPinned].focus();
+        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          pinMethod(methodPinned - 1);
+          if (methodChips[methodPinned]) methodChips[methodPinned].focus();
+        }
+      });
+    });
+
+    methodBoard.addEventListener("mouseleave", function () {
+      paintMethod(methodPinned, true);
+    });
+
+    if (methodPrev) {
+      methodPrev.addEventListener("click", function () {
+        pinMethod(methodPinned - 1);
+      });
+    }
+    if (methodNext) {
+      methodNext.addEventListener("click", function () {
+        pinMethod(methodPinned + 1);
+      });
+    }
+
+    paintMethod(0, false);
   }
 })();
