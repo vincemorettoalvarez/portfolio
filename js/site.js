@@ -23,26 +23,9 @@
   var details = document.getElementById("learning-details");
   if (details && !location.hash) details.open = false;
 
-  /* About page timeline */
-  var stops = document.querySelectorAll(".timeline-stop");
-  if (stops.length) {
-    stops.forEach(function (stop) {
-      stop.addEventListener("click", function () {
-        var expanded = stop.getAttribute("aria-expanded") === "true";
-        stops.forEach(function (other) {
-          other.setAttribute("aria-expanded", "false");
-        });
-        stop.setAttribute("aria-expanded", expanded ? "false" : "true");
-      });
-
-      stop.addEventListener("keydown", function (event) {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          stop.click();
-        }
-      });
-    });
-
+  /* Scroll reveal: text first, media slightly after via CSS delay */
+  var revealTargets = document.querySelectorAll(".timeline-stop[data-reveal], .reveal-block");
+  if (revealTargets.length) {
     if ("IntersectionObserver" in window) {
       var observer = new IntersectionObserver(
         function (entries) {
@@ -53,15 +36,86 @@
             }
           });
         },
-        { threshold: 0.2, rootMargin: "0px 0px -8% 0px" }
+        { threshold: 0.18, rootMargin: "0px 0px -6% 0px" }
       );
-      stops.forEach(function (stop) {
-        observer.observe(stop);
+      revealTargets.forEach(function (el) {
+        observer.observe(el);
       });
     } else {
-      stops.forEach(function (stop) {
-        stop.classList.add("is-visible");
+      revealTargets.forEach(function (el) {
+        el.classList.add("is-visible");
       });
+    }
+  }
+
+  /* Methodology walkthrough: path progress, step spotlight, rail sync */
+  var methodSteps = document.querySelectorAll(".method-step[data-step]");
+  var progressFill = document.getElementById("method-progress-fill");
+  var railLinks = document.querySelectorAll("[data-step-link]");
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function setActiveStep(stepNum) {
+    methodSteps.forEach(function (step) {
+      var active = String(step.getAttribute("data-step")) === String(stepNum);
+      step.classList.toggle("is-active", active);
+      step.classList.toggle("is-seen", Number(step.getAttribute("data-step")) <= Number(stepNum));
+    });
+    railLinks.forEach(function (link) {
+      var active = String(link.getAttribute("data-step-link")) === String(stepNum);
+      link.classList.toggle("is-active", active);
+      if (active) {
+        link.setAttribute("aria-current", "step");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
+
+  if (methodSteps.length) {
+    if ("IntersectionObserver" in window) {
+      var stepObserver = new IntersectionObserver(
+        function (entries) {
+          var visible = entries
+            .filter(function (e) { return e.isIntersecting; })
+            .sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          if (visible.length) {
+            setActiveStep(visible[0].target.getAttribute("data-step"));
+          }
+        },
+        { threshold: [0.35, 0.55, 0.75], rootMargin: "-18% 0px -35% 0px" }
+      );
+      methodSteps.forEach(function (step) {
+        stepObserver.observe(step);
+        if (!reduceMotion) {
+          step.classList.add("method-step--animate");
+        } else {
+          step.classList.add("is-seen", "is-active");
+        }
+      });
+    } else {
+      setActiveStep(1);
+      methodSteps.forEach(function (step) {
+        step.classList.add("is-seen");
+      });
+    }
+
+    if (!reduceMotion && progressFill) {
+      var walk = document.getElementById("method-walk");
+      function updatePathProgress() {
+        if (!walk) return;
+        var rect = walk.getBoundingClientRect();
+        var viewH = window.innerHeight || 1;
+        var start = viewH * 0.55;
+        var end = rect.height + viewH * 0.2;
+        var traveled = start - rect.top;
+        var pct = Math.max(0, Math.min(1, traveled / end)) * 100;
+        progressFill.style.width = pct + "%";
+      }
+      window.addEventListener("scroll", updatePathProgress, { passive: true });
+      window.addEventListener("resize", updatePathProgress);
+      updatePathProgress();
+    } else if (progressFill) {
+      progressFill.style.width = "100%";
     }
   }
 })();

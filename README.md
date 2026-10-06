@@ -1,4 +1,4 @@
-# Vince Moretto Álvarez — Portfolio
+# Vince Moretto Álvarez portfolio
 
 Static multi-page portfolio (HTML, CSS, JS, assets). No build step required.
 
@@ -11,7 +11,7 @@ Static multi-page portfolio (HTML, CSS, JS, assets). No build step required.
 | `index.html` | Landing hero (FCP timeline atmosphere + headshot) |
 | `work.html` | Selected projects (courses, Weekly Watch, Talking Shop) |
 | `about.html` | Interactive career timeline, credentials, craft |
-| `methodology.html` | How Vince designs learning (outline) |
+| `methodology.html` | How Vince designs learning (cinematic walkthrough) |
 | `css/site.css` | Shared styles |
 | `js/site.js` | Case expand + About timeline interactions |
 | `assets/` | Images, résumé PDF, Weekly Watch video, FCP hero background |
@@ -26,7 +26,7 @@ Then open http://localhost:8080
 
 ## Notes for Vince
 
-- **University of Phoenix degree title** is listed generically on About (“Degree from University of Phoenix”). Confirm the exact title before treating the site as final.
+- Degree on About: Bachelor’s in Business Management, University of Phoenix (confirmed).
 - Landing hero does **not** name employer brands; company proof lives on Work / About.
 - Résumé link: `assets/vince-moretto-alvarez-resume-linked.pdf`
 - Contact: `mailto:vince.moretto@icloud.com`
