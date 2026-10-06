@@ -189,24 +189,42 @@ summary:focus-visible {
   inset: 0;
   z-index: 0;
   opacity: 0;
-  animation: hero-fade-in 1.4s ease-out 0.1s forwards;
+  animation: hero-fade-in 1.6s ease-out 0.1s forwards;
+  overflow: hidden;
 }
 
 .hero-atmosphere img {
-  width: 100%;
-  height: 100%;
+  width: 108%;
+  height: 108%;
+  margin: -4%;
   object-fit: cover;
-  object-position: center 35%;
-  filter: saturate(1.05) contrast(1.02);
+  object-position: center 32%;
+  filter: blur(7px) saturate(0.92) brightness(0.72) contrast(0.96);
+  transform: scale(1.02);
+  animation: hero-atmosphere-drift 28s ease-in-out 1.6s infinite alternate;
+}
+
+.hero-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(115deg, rgba(10, 20, 36, 0.55) 0%, rgba(12, 26, 44, 0.32) 46%, rgba(10, 22, 40, 0.2) 100%),
+    linear-gradient(180deg, rgba(8, 16, 30, 0.28) 0%, rgba(8, 16, 30, 0.08) 40%, rgba(8, 16, 30, 0.42) 100%);
+  backdrop-filter: blur(10px) saturate(0.9);
+  -webkit-backdrop-filter: blur(10px) saturate(0.9);
 }
 
 .hero-atmosphere::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   background:
-    linear-gradient(105deg, rgba(8, 16, 30, 0.82) 0%, rgba(8, 16, 30, 0.55) 42%, rgba(8, 16, 30, 0.28) 68%, rgba(8, 16, 30, 0.45) 100%),
-    linear-gradient(180deg, rgba(8, 16, 30, 0.35) 0%, transparent 28%, rgba(8, 16, 30, 0.55) 100%);
+    radial-gradient(ellipse 70% 60% at 28% 48%, rgba(232, 240, 255, 0.06) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 28%, rgba(8, 16, 30, 0.18) 100%);
+  pointer-events: none;
 }
 
 .hero-stage {
@@ -234,38 +252,28 @@ summary:focus-visible {
   font-size: clamp(2.6rem, 5.6vw, 4.35rem);
   line-height: 1.05;
   letter-spacing: -0.03em;
-  margin: 0 0 1rem;
+  margin: 0 0 1.15rem;
   opacity: 0;
   transform: translateY(1.25rem);
   animation: text-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
 }
 
-.hero-role {
-  margin: 0 0 1rem;
-  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
-  font-weight: 400;
-  color: var(--muted-on-dark);
-  opacity: 0;
-  transform: translateY(1.1rem);
-  animation: text-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
-}
-
 .hero-purpose {
-  margin: 0 0 1.75rem;
-  font-size: clamp(1rem, 1.35vw, 1.12rem);
+  margin: 0 0 1.85rem;
+  font-size: clamp(1.05rem, 1.45vw, 1.2rem);
   font-weight: 300;
   line-height: 1.55;
-  color: rgba(232, 240, 255, 0.88);
-  max-width: 32rem;
+  color: rgba(232, 240, 255, 0.9);
+  max-width: 30rem;
   opacity: 0;
   transform: translateY(1.1rem);
-  animation: text-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.65s forwards;
+  animation: text-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
 }
 
 .cta-group {
   opacity: 0;
   transform: translateY(1rem);
-  animation: text-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
+  animation: text-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.72s forwards;
 }
 
 .cta {
@@ -301,10 +309,10 @@ summary:focus-visible {
 .hero-portrait {
   align-self: center;
   justify-self: end;
-  width: min(100%, 340px);
+  width: min(100%, 372px);
   opacity: 0;
   transform: translateY(1.5rem);
-  animation: text-rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+  animation: text-rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
 }
 
 .hero-portrait img {
@@ -314,14 +322,19 @@ summary:focus-visible {
   object-fit: cover;
   object-position: center 18%;
   border-radius: 50%;
-  border: 3px solid rgba(232, 240, 255, 0.22);
-  background: rgba(8, 16, 30, 0.2);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+  border: 1px solid rgba(232, 240, 255, 0.14);
+  background: rgba(8, 16, 30, 0.12);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
 }
 
 @keyframes hero-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes hero-atmosphere-drift {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.06) translate3d(-1.2%, -0.6%, 0); }
 }
 
 @keyframes text-rise {
@@ -1633,18 +1646,23 @@ figcaption strong {
     order: 1;
     justify-self: start;
     align-self: center;
-    width: min(220px, 48vw);
+    width: min(236px, 52vw);
     margin-top: 0.5rem;
   }
 
   .hero-atmosphere img {
-    object-position: 30% center;
-    filter: blur(0.2px) saturate(1.05);
+    object-position: 28% center;
+    filter: blur(8px) saturate(0.9) brightness(0.68) contrast(0.96);
+  }
+
+  .hero-atmosphere::before {
+    background:
+      linear-gradient(180deg, rgba(10, 20, 36, 0.42) 0%, rgba(10, 20, 36, 0.55) 48%, rgba(8, 16, 30, 0.72) 100%);
   }
 
   .hero-atmosphere::after {
     background:
-      linear-gradient(180deg, rgba(8, 16, 30, 0.55) 0%, rgba(8, 16, 30, 0.72) 45%, rgba(8, 16, 30, 0.88) 100%);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 35%, rgba(8, 16, 30, 0.22) 100%);
   }
 
   .project-preview {
@@ -1757,8 +1775,8 @@ figcaption strong {
   }
 
   .hero-atmosphere,
+  .hero-atmosphere img,
   .hero-name,
-  .hero-role,
   .hero-purpose,
   .cta-group,
   .hero-portrait,
