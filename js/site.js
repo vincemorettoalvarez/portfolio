@@ -168,7 +168,7 @@
     var methodLink = document.createElement("a");
     methodLink.className = "method-stage-link";
     methodLink.href = "work.html#learning";
-    methodLink.textContent = "See practice on Work";
+    methodLink.textContent = "See this in the Allstate course";
     methodLink.hidden = true;
     if (methodCopyEl && methodCopyEl.parentNode) {
       methodCopyEl.parentNode.appendChild(methodLink);
@@ -178,45 +178,45 @@
       {
         num: "01",
         title: "Intake",
-        job: "Clarify the need before building.",
-        copy: "Projects start by clarifying the audience, business need, and constraints. Who needs to do what differently, and what gets in the way?"
+        job: "Start with the real job, not the slide deck.",
+        copy: "Who needs to do what differently, and what gets in the way? I get the audience, the business need, and the constraints straight before anything gets built."
       },
       {
         num: "02",
-        title: "Stakeholders & SMEs",
-        job: "Partner for accuracy and buy-in.",
-        copy: "Close partnership with subject matter experts and stakeholders. The goal is usable truth, not a slide dump of everything someone knows."
+        title: "Stakeholders and SMEs",
+        job: "Get the experts in the room early.",
+        copy: "I work closely with subject-matter experts and stakeholders so the content is true and they can stand behind it. I would rather ship what people can use than everything an expert could say."
       },
       {
         num: "03",
         title: "Recommend",
-        job: "Choose the format that fits the job.",
-        copy: "Advise on approach (course, video, or resource) based on the learning need, time available, and how people will apply it on the job."
+        job: "Pick the format that fits the time they have.",
+        copy: "Sometimes the answer is a course. Sometimes it is a video, or a one-page resource. I pick based on the need, the time people have, and how they will use it on the job."
       },
       {
         num: "04",
         title: "ADDIE in the work",
-        job: "Treat the model as a loop, not a checkbox.",
-        copy: "Analysis, design, development, implementation, and evaluation show up as a cycle. Scope and fidelity flex with the problem."
+        job: "Use the model as a loop, not a ritual.",
+        copy: "Analyze, design, build, launch, and check. Scope and polish flex with the problem. I don’t drag a small need through a giant process."
       },
       {
         num: "05",
-        title: "Knowledge checks throughout",
-        job: "Practice inside the experience, not only at the end.",
-        copy: "Flip cards, sorting, scenarios, and other chances to try before a final quiz.",
+        title: "Practice along the way",
+        job: "Let people try it before the quiz.",
+        copy: "People should try the decision before they get graded on it. I build practice into the course so they can stumble in a safe place.",
         link: true
       },
       {
         num: "06",
         title: "Assessment",
-        job: "Measure what learners can do afterward.",
-        copy: "Feedback that reinforces the rule, not just a score. Closing with clarity matters more than finishing with a percentage."
+        job: "See what they can do when they leave.",
+        copy: "I measure the skill, then explain the rule in the feedback. A score without a reason does not help anyone the next day."
       },
       {
         num: "07",
-        title: "Analytics & follow-through",
-        job: "Review after launch, then iterate.",
-        copy: "Look at data and feedback to see if training is effective. Closing the window isn’t the finish line; follow-through is."
+        title: "Analytics and follow-through",
+        job: "Launch is not the finish line.",
+        copy: "After it ships I look at the data and the feedback, then I iterate. If they can close the window, the work is not over."
       }
     ];
 

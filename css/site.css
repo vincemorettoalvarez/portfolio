@@ -852,16 +852,14 @@ figcaption strong {
   margin: 0;
   padding-left: 0.9rem;
   border-left: 2px solid var(--line);
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.5;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .about-strengths strong {
-  display: block;
   color: var(--ink);
   font-weight: 600;
-  margin-bottom: 0.15rem;
 }
 
 .about-top {
@@ -1095,9 +1093,9 @@ figcaption strong {
 
 .flight-media--portrait {
   aspect-ratio: 3 / 4;
-  max-height: min(70vh, 34rem);
-  margin-inline: auto;
-  width: min(100%, 22rem);
+  max-height: min(72vh, 36rem);
+  width: min(100%, 24rem);
+  justify-self: start;
   background: rgba(8, 16, 30, 0.28);
 }
 
