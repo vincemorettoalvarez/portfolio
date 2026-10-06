@@ -301,7 +301,7 @@ summary:focus-visible {
 .hero-portrait {
   align-self: center;
   justify-self: end;
-  width: min(100%, 380px);
+  width: min(100%, 340px);
   opacity: 0;
   transform: translateY(1.5rem);
   animation: text-rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
@@ -310,9 +310,13 @@ summary:focus-visible {
 .hero-portrait img {
   width: 100%;
   height: auto;
-  object-fit: contain;
-  object-position: center;
-  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.35));
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center 18%;
+  border-radius: 50%;
+  border: 3px solid rgba(232, 240, 255, 0.22);
+  background: rgba(8, 16, 30, 0.2);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
 }
 
 @keyframes hero-fade-in {
@@ -1036,6 +1040,11 @@ figcaption strong {
   align-items: center;
 }
 
+.flight-panel--portrait,
+.flight-panel:has(.flight-media--portrait) {
+  align-items: start;
+}
+
 .flight-panel.is-active {
   display: grid;
   animation: flight-panel-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -1082,6 +1091,19 @@ figcaption strong {
   object-position: center;
   display: block;
   vertical-align: middle;
+}
+
+.flight-media--portrait {
+  aspect-ratio: 3 / 4;
+  max-height: min(70vh, 34rem);
+  margin-inline: auto;
+  width: min(100%, 22rem);
+  background: rgba(8, 16, 30, 0.28);
+}
+
+.flight-media--portrait img {
+  object-fit: contain;
+  object-position: center;
 }
 
 .flight-media--brand {
